@@ -1,0 +1,102 @@
+---
+title: "Heart Disease Risk Prediction Using Machine Learning in R"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## 1. Introduction
+
+<!-- Write introduction here on Day 7 -->
+
+## 2. Data
+
+<!-- Describe dataset here on Day 7 -->
+
+## 3. Data Import and Cleaning
+
+```{r load-libraries}
+# Load all required packages
+library(tidyverse)
+library(ggplot2)
+library(caret)
+library(e1071)
+library(pheatmap)
+library(pROC)
+library(corrplot)
+library(randomForest)
+```
+
+```{r import-data}
+# Data will be loaded here on Day 2
+```
+
+## 4. Exploratory Data Analysis
+
+```{r eda-plot1}
+# Figure 1 - Age distribution (Day 3)
+```
+
+```{r eda-plot2}
+# Figure 2 - Chest pain type (Day 3)
+```
+
+```{r eda-plot3}
+# Figure 3 - Boxplots (Day 4)
+```
+
+```{r eda-heatmap}
+# Figure 4 - Correlation heatmap (Day 4)
+```
+
+## 5. Statistical Tests
+
+```{r stats-tests}
+# t-tests and chi-squared tests (Day 4)
+```
+
+## 6. Machine Learning Models
+
+```{r train-test-split}
+# Split data 80/20 (Day 5)
+```
+
+```{r logistic-regression}
+# Logistic regression model (Day 5)
+```
+
+```{r random-forest}
+# Random forest model (Day 5)
+```
+
+```{r svm-model}
+# SVM model (Day 6)
+```
+
+```{r roc-curves}
+# ROC curves for all models (Day 6)
+```
+
+```{r feature-importance}
+# Feature importance plot (Day 6)
+```
+
+```{r clustering}
+# K-means clustering (Day 6)
+```
+
+## 7. Results and Discussion
+
+<!-- Write interpretation here on Day 7 -->
+
+## 8. Conclusion
+
+<!-- Write conclusion here on Day 7 -->
+
+## 9. References
+
+<!-- Add references here on Day 7 -->
