@@ -31,9 +31,27 @@ library(corrplot)
 library(randomForest)
 ```
 
-```{r import-data}
-# Data will be loaded here on Day 2
-```
+#{r import-data}
+# Load the dataset
+df <- read.csv("C:/Users/ADMIN/Documents/Bioinformatic-Project---2020-ASP-83/Data/heart.csv")
+
+# Check size
+dim(df)
+
+# Check for missing values
+sum(is.na(df))
+
+# Convert categorical variables to factors
+df$sex <- factor(df$sex, levels = c(0,1), labels = c("Female", "Male"))
+df$cp <- factor(df$cp, levels = c(0,1,2,3), labels = c("Typical Angina", "Atypical Angina", "Non-anginal", "Asymptomatic"))
+df$fbs <- factor(df$fbs, levels = c(0,1), labels = c("No", "Yes"))
+df$restecg <- factor(df$restecg, levels = c(0,1,2), labels = c("Normal", "Abnormal", "Hypertrophy"))
+df$exang <- factor(df$exang, levels = c(0,1), labels = c("No", "Yes"))
+df$target <- factor(df$target, levels = c(0,1), labels = c("No Disease", "Heart Disease"))
+
+# Check cleaned data
+str(df)
+
 
 ## 4. Exploratory Data Analysis
 
