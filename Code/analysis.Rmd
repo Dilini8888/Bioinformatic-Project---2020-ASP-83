@@ -88,13 +88,59 @@ print(plot2)
 ggsave("Output/figure2_chest_pain.png", plot2, width = 8, height = 5)
 
 
-```{r eda-plot3}
-# Figure 3 - Boxplots (Day 4)
-```
+#{r eda-plot3}
+# Figure 3 - Boxplots of cholesterol and max heart rate by outcome
+plot3 <- df %>%
+  select(target, chol, thalach) %>%
+  pivot_longer(cols = c(chol, thalach), 
+               names_to = "Variable", 
+               values_to = "Value") %>%
+  mutate(Variable = recode(Variable,
+    "chol" = "Cholesterol (mg/dl)",
+    "thalach" = "Max Heart Rate (bpm)")) %>%
+  ggplot(aes(x = target, y = Value, fill = target)) +
+  geom_boxplot(color = "black") +
+  facet_wrap(~Variable, scales = "free_y") +
+  labs(
+    title = "Figure 3: Cholesterol and Max Heart Rate by Heart Disease Status",
+    x = "Diagnosis",
+    y = "Value",
+    fill = "Diagnosis"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-```{r eda-heatmap}
-# Figure 4 - Correlation heatmap (Day 4)
-```
+print(plot3)
+ggsave("Output/figure3_boxplots.png", plot3, width = 8, height = 5)
+
+
+#{r eda-heatmap}
+# Figure 4 - Correlation heatmap of clinical features
+library(pheatmap)
+
+# Select numeric columns and calculate correlation
+numeric_df <- df %>%
+  select(age, trestbps, chol, thalach, oldpeak, ca) %>%
+  cor()
+
+# Save heatmap
+png("Output/figure4_heatmap.png", width = 800, height = 600)
+pheatmap(numeric_df,
+         main = "Figure 4: Correlation Heatmap of Clinical Features",
+         color = colorRampPalette(c("blue", "white", "red"))(50),
+         display_numbers = TRUE,
+         number_format = "%.2f",
+         fontsize = 12)
+dev.off()
+
+# Display heatmap
+pheatmap(numeric_df,
+         main = "Figure 4: Correlation Heatmap of Clinical Features",
+         color = colorRampPalette(c("blue", "white", "red"))(50),
+         display_numbers = TRUE,
+         number_format = "%.2f",
+         fontsize = 12)
+
 
 ## 5. Statistical Tests
 
