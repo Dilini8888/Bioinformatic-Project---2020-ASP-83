@@ -55,13 +55,38 @@ str(df)
 
 ## 4. Exploratory Data Analysis
 
-```{r eda-plot1}
-# Figure 1 - Age distribution (Day 3)
-```
+#{r eda-plot1}
+# Figure 1 - Age distribution by heart disease outcome
+plot1 <- ggplot(df, aes(x = age, fill = target)) +
+  geom_histogram(bins = 30, color = "white") +
+  labs(
+    title = "Figure 1: Age Distribution by Heart Disease Status",
+    x = "Age (years)",
+    y = "Number of Patients",
+    fill = "Diagnosis"
+  ) +
+  theme_minimal()
 
-```{r eda-plot2}
-# Figure 2 - Chest pain type (Day 3)
-```
+print(plot1)
+ggsave("Output/figure1_age_distribution.png", plot1, width = 8, height = 5)
+
+
+#{r eda-plot2}
+# Figure 2 - Chest pain type by heart disease outcome
+plot2 <- ggplot(df, aes(x = cp, fill = target)) +
+  geom_bar(position = "dodge", color = "white") +
+  labs(
+    title = "Figure 2: Chest Pain Type by Heart Disease Status",
+    x = "Chest Pain Type",
+    y = "Number of Patients",
+    fill = "Diagnosis"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 15, hjust = 1))
+
+print(plot2)
+ggsave("Output/figure2_chest_pain.png", plot2, width = 8, height = 5)
+
 
 ```{r eda-plot3}
 # Figure 3 - Boxplots (Day 4)
