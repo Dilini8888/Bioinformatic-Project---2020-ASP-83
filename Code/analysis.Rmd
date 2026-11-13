@@ -172,33 +172,185 @@ cat("\nExercise Angina p-value:", round(chi_exang$p.value, 6))
 
 ## 6. Machine Learning Models
 
-```{r train-test-split}
-# Split data 80/20 (Day 5)
-```
+#{r train-test-split}
+# Set seed for reproducibility
+set.seed(123)
 
-```{r logistic-regression}
-# Logistic regression model (Day 5)
-```
+# Fix factor level names
+df$target <- factor(df$target, 
+                    levels = c("No Disease", "Heart Disease"),
+                    labels = c("NoDisease", "HeartDisease"))
 
-```{r random-forest}
-# Random forest model (Day 5)
-```
+# Split data 80% train, 20% test
+trainIndex <- createDataPartition(df$target, p = 0.8, list = FALSE)
+train_data <- df[trainIndex, ]
+test_data <- df[-trainIndex, ]
 
-```{r svm-model}
-# SVM model (Day 6)
-```
+cat("Training set rows:", nrow(train_data))
+cat("\nTest set rows:", nrow(test_data))
 
-```{r roc-curves}
-# ROC curves for all models (Day 6)
-```
 
-```{r feature-importance}
-# Feature importance plot (Day 6)
-```
+#{r logistic-regression}
+# Logistic Regression model with 5-fold cross validation
+set.seed(123)
 
-```{r clustering}
-# K-means clustering (Day 6)
-```
+log_model <- train(target ~ .,
+                   data = train_data,
+                   method = "glm",
+                   family = "binomial",
+                   trControl = trainControl(method = "cv", 
+                                          number = 5,
+                                          classProbs = TRUE))
+
+# Test predictions
+log_pred <- predict(log_model, test_data)
+
+# Confusion matrix
+log_cm <- confusionMatrix(log_pred, test_data$target)
+print(log_cm)
+
+
+#{r random-forest}
+# Random Forest model with 5-fold cross validation
+set.seed(123)
+
+rf_model <- train(target ~ .,
+                  data = train_data,
+                  method = "rf",
+                  trControl = trainControl(method = "cv", 
+                                         number = 5,
+                                         classProbs = TRUE))
+
+# Test predictions
+rf_pred <- predict(rf_model, test_data)
+
+# Confusion matrix
+rf_cm <- confusionMatrix(rf_pred, test_data$target)
+print(rf_cm)
+
+
+#{r svm-model}
+# SVM model using e1071
+library(e1071)
+
+set.seed(123)
+
+svm_model <- svm(target ~ ., 
+                 data = train_data, 
+                 kernel = "radial",
+                 probability = TRUE)
+
+# Test predictions
+svm_pred <- predict(svm_model, test_data)
+
+# Confusion matrix
+svm_cm <- confusionMatrix(svm_pred, test_data$target)
+print(svm_cm)
+
+
+#{r roc-curves}
+# ROC curves for all models
+library(pROC)
+
+# Get probabilities
+log_prob <- predict(log_model, test_data, type = "prob")[,2]
+rf_prob <- predict(rf_model, test_data, type = "prob")[,2]
+svm_prob_raw <- predict(svm_model, test_data, probability = TRUE)
+svm_prob <- attr(svm_prob_raw, "probabilities")[,2]
+
+# Create ROC curves
+roc_log <- roc(test_data$target, log_prob)
+roc_rf <- roc(test_data$target, rf_prob)
+roc_svm <- roc(test_data$target, svm_prob)
+
+# Print AUC values
+cat("Logistic Regression AUC:", round(auc(roc_log), 4))
+cat("\nRandom Forest AUC:", round(auc(roc_rf), 4))
+cat("\nSVM AUC:", round(auc(roc_svm), 4))
+
+# Save ROC plot
+png("Output/figure5_roc_curves.png", width = 1200, height = 900, res = 150)
+plot(roc_log, col = "blue", lwd = 2, 
+     main = "Figure 5: ROC Curves for All Models")
+plot(roc_rf, col = "red", lwd = 2, add = TRUE)
+plot(roc_svm, col = "green", lwd = 2, add = TRUE)
+legend("bottomright", 
+       legend = c(
+         paste("Logistic Regression AUC =", round(auc(roc_log), 3)),
+         paste("Random Forest AUC =", round(auc(roc_rf), 3)),
+         paste("SVM AUC =", round(auc(roc_svm), 3))),
+       col = c("blue", "red", "green"), 
+       lwd = 2)
+dev.off()
+
+# Display in RStudio
+plot(roc_log, col = "blue", lwd = 2, 
+     main = "Figure 5: ROC Curves for All Models")
+plot(roc_rf, col = "red", lwd = 2, add = TRUE)
+plot(roc_svm, col = "green", lwd = 2, add = TRUE)
+legend("bottomright", 
+       legend = c(
+         paste("Logistic Regression AUC =", round(auc(roc_log), 3)),
+         paste("Random Forest AUC =", round(auc(roc_rf), 3)),
+         paste("SVM AUC =", round(auc(roc_svm), 3))),
+       col = c("blue", "red", "green"), 
+       lwd = 2)
+
+#{r feature-importance}
+# Feature Importance from Random Forest
+importance_data <- varImp(rf_model)$importance
+importance_data$Feature <- rownames(importance_data)
+importance_data <- importance_data[order(importance_data$Overall, 
+                                         decreasing = TRUE),]
+
+# Plot feature importance
+plot6 <- ggplot(importance_data, 
+                aes(x = reorder(Feature, Overall), y = Overall)) +
+  geom_bar(stat = "identity", fill = "#66B2FF", color = "black") +
+  coord_flip() +
+  labs(
+    title = "Figure 6: Feature Importance from Random Forest",
+    x = "Clinical Feature",
+    y = "Importance Score"
+  ) +
+  theme_minimal()
+
+print(plot6)
+ggsave("Output/figure6_feature_importance.png", plot6, width = 8, height = 5, dpi = 300)
+
+#{r clustering}
+# K-means clustering
+set.seed(123)
+
+# Select numeric columns for clustering
+cluster_data <- df[, c("age", "trestbps", "chol", "thalach", "oldpeak", "ca")]
+
+# Scale the data
+scaled_data <- scale(cluster_data)
+
+# K-means with 2 clusters
+km <- kmeans(scaled_data, centers = 2, nstart = 25)
+
+# Add cluster to dataframe
+df$cluster <- factor(km$cluster)
+
+# Plot using age vs thalach
+plot7 <- ggplot(df, aes(x = age, y = thalach, 
+                         color = cluster, 
+                         shape = target)) +
+  geom_point(size = 3, alpha = 0.7) +
+  scale_color_manual(values = c("1" = "#FF9999", "2" = "#66B2FF")) +
+  labs(
+    title = "Figure 7: K-means Clustering of Patients",
+    x = "Age (years)",
+    y = "Max Heart Rate (bpm)",
+    color = "Cluster",
+    shape = "Diagnosis"
+  ) +
+  theme_minimal()
+
+print(plot7)
+ggsave("Output/figure7_clustering.png", plot7, width = 8, height = 5, dpi = 300)
 
 ## 7. Results and Discussion
 
