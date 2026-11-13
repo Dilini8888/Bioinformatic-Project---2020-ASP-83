@@ -144,9 +144,31 @@ pheatmap(numeric_df,
 
 ## 5. Statistical Tests
 
-```{r stats-tests}
-# t-tests and chi-squared tests (Day 4)
-```
+#{r stats-tests}
+# T-tests for continuous variables
+t_age <- t.test(age ~ target, data = df)
+t_chol <- t.test(chol ~ target, data = df)
+t_thalach <- t.test(thalach ~ target, data = df)
+t_trestbps <- t.test(trestbps ~ target, data = df)
+
+# Print t-test results
+cat("=== T-TEST RESULTS ===\n")
+cat("\nAge p-value:", round(t_age$p.value, 4))
+cat("\nCholesterol p-value:", round(t_chol$p.value, 4))
+cat("\nMax Heart Rate p-value:", round(t_thalach$p.value, 4))
+cat("\nBlood Pressure p-value:", round(t_trestbps$p.value, 4))
+
+# Chi-squared tests for categorical variables
+chi_sex <- chisq.test(table(df$sex, df$target))
+chi_cp <- chisq.test(table(df$cp, df$target))
+chi_exang <- chisq.test(table(df$exang, df$target))
+
+# Print chi-squared results
+cat("\n\n=== CHI-SQUARED TEST RESULTS ===\n")
+cat("\nSex p-value:", round(chi_sex$p.value, 6))
+cat("\nChest Pain p-value:", round(chi_cp$p.value, 6))
+cat("\nExercise Angina p-value:", round(chi_exang$p.value, 6))
+
 
 ## 6. Machine Learning Models
 
